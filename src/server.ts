@@ -11,7 +11,7 @@ import path from "path";
 import LandingRoutes from "./api/landing/route";
 import ProductRoutes from "./api/product/route";
 import UserRoutes from "./api/user/route";
-import { config } from "./config";
+import DashboardRoutes from "./api/dashboard/route";
 
 // use middlewares
 app.use(Express.static(path.join(__dirname, "..", "public")));
@@ -20,8 +20,11 @@ app.use(Express.urlencoded({ extended: true }));
 
 // use routes
 app.use("/api/landing", LandingRoutes);
+
 app.use("/api/product", ProductRoutes);
 app.use("/api/user", UserRoutes);
+
+app.use("/api/dashboard", DashboardRoutes);
 
 // run application
 app.listen(port, () => {
