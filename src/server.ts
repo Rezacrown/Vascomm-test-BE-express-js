@@ -13,18 +13,23 @@ import ProductRoutes from "./api/product/route";
 import UserRoutes from "./api/user/route";
 import DashboardRoutes from "./api/dashboard/route";
 
+import AuthRoutes from "./api/auth/route";
+import { isAuthenticate, isOnlyAdmin } from "./middlewares/auth";
+
 // use middlewares
 app.use(Express.static(path.join(__dirname, "..", "public")));
-app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
+app.use(Express.json());
 
 // use routes
+app.use("/api/auth", AuthRoutes);
+
 app.use("/api/landing", LandingRoutes);
 
-app.use("/api/product", ProductRoutes);
-app.use("/api/user", UserRoutes);
+app.use("/api/dashboard", isAuthenticate, DashboardRoutes);
 
-app.use("/api/dashboard", DashboardRoutes);
+app.use("/api/product", isAuthenticate, isOnlyAdmin, ProductRoutes);
+app.use("/api/user", isAuthenticate, isOnlyAdmin, UserRoutes);
 
 // run application
 app.listen(port, () => {

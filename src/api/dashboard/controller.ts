@@ -3,10 +3,18 @@ import { NextFunction, Request, Response } from "express";
 import { ResponseFormater } from "../../utils/ResponseFormat";
 
 import { getDataDashboard } from "../../services/dashboard";
+import { RequestiWithuser } from "../../../types/RequestWithUser";
 
-export async function index(req: Request, res: Response, next: NextFunction) {
+export async function index(
+  req: RequestiWithuser,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    const data = await getDataDashboard(req);
+    let data = {};
+    if (Number(req.user?.role) == 1) {
+      data = await getDataDashboard(req);
+    }
 
     const response: ResponseFormater = {
       code: 200,

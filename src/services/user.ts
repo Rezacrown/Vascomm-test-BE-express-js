@@ -5,6 +5,9 @@ import { prisma } from "../utils/prisma";
 import { generateRandomPassword } from "../utils/generateRandPassword";
 import { transport } from "../utils/mail/nodemailer";
 
+import jwt from "jsonwebtoken";
+import { config } from "../config";
+
 export async function getAllUser(req: Request) {
   const users = await prisma.user.findMany({
     select: {
@@ -32,7 +35,7 @@ export async function createUser(req: Request) {
 
   const user = await prisma.user.create({
     data: {
-      email: email,
+      email: String(email).toLowerCase(),
       name: name,
       telp: telp,
       password: randomPassword,
@@ -49,6 +52,18 @@ export async function createUser(req: Request) {
     },
   });
 
+  // create jwt token
+  const token = jwt.sign(
+    {
+      name: user.name,
+      id: user.id,
+      email: user.email,
+      role: user.roleId,
+    },
+    config.jwtSecret as string,
+    { expiresIn: 60 * 60 * 0.5 } // expires in half an hour
+  );
+
   // send email to user
   await transport.sendMail({
     from: "vascommtest@rizkyrezaserver123.my.id",
@@ -58,7 +73,7 @@ export async function createUser(req: Request) {
     html: `<h1>ini adalah passwordnya: ${randomPassword}</h1>`,
   });
 
-  return user;
+  return { user, token: `Bearer ${token}` };
 }
 
 export async function softDeleteUser(req: Request) {
