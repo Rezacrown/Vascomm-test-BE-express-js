@@ -1,4 +1,3 @@
-import { users } from "./../prisma/seeder/user";
 import Express from "express";
 
 const app = Express();
@@ -6,6 +5,7 @@ const port = 3000;
 
 import fs from "fs";
 import path from "path";
+import cors from "cors";
 
 // import routes API
 import LandingRoutes from "./api/landing/route";
@@ -17,6 +17,11 @@ import AuthRoutes from "./api/auth/route";
 import { isAuthenticate, isOnlyAdmin } from "./middlewares/auth";
 
 // use middlewares
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(Express.static(path.join(__dirname, "..", "public")));
 app.use(Express.urlencoded({ extended: true }));
 app.use(Express.json());
